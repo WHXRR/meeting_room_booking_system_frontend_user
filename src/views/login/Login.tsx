@@ -1,64 +1,69 @@
 import type { FormProps } from 'antd'
-import { Button, Checkbox, Form, Input } from 'antd'
+import { Button, Form, Input, message } from 'antd'
+import { login } from '../../api/login'
 
-interface FieldType {
-  username?: string
-  password?: string
-  remember?: string
+interface LoginUser {
+  username: string
+  password: string
 }
 
-const onFinish: FormProps<FieldType>['onFinish'] = (values) => {
-  console.log('Success:', values)
-}
-
-const onFinishFailed: FormProps<FieldType>['onFinishFailed'] = (errorInfo) => {
-  console.log('Failed:', errorInfo)
+const onFinish: FormProps<LoginUser>['onFinish'] = async (values) => {
+  const res = await login(values.username, values.password)
+  if ([200, 201].includes(res.status)) {
+    message.success('登录成功')
+  }
+  else {
+    message.error(res.data.data || '登录失败')
+  }
 }
 
 export function Login() {
   return (
-    <div className="login-box">
-      <h1 className="text-center">会议室预定系统</h1>
-      <Form
-        name="basic"
-        labelCol={{ span: 8 }}
-        wrapperCol={{ span: 16 }}
-        style={{ maxWidth: 600 }}
-        initialValues={{ remember: true }}
-        onFinish={onFinish}
-        onFinishFailed={onFinishFailed}
-        autoComplete="off"
-      >
-        <Form.Item<FieldType>
-          label="Username"
-          name="username"
-          rules={[{ required: true, message: 'Please input your username!' }]}
+    <div className="flex flex-col items-center justify-center h-full">
+      <h1 className="text-center font-bold text-2xl">会议室预定系统</h1>
+      <div className="mt-4 w-full max-w-[600px]">
+        <Form
+          name="basic"
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 20 }}
+          style={{ maxWidth: 600 }}
+          initialValues={{ remember: true }}
+          onFinish={onFinish}
+          autoComplete="off"
         >
-          <Input />
-        </Form.Item>
+          <Form.Item<LoginUser>
+            label="用户名"
+            name="username"
+            rules={[{ required: true, message: '请输入用户名!' }]}
+          >
+            <Input />
+          </Form.Item>
 
-        <Form.Item<FieldType>
-          label="Password"
-          name="password"
-          rules={[{ required: true, message: 'Please input your password!' }]}
-        >
-          <Input.Password />
-        </Form.Item>
+          <Form.Item<LoginUser>
+            label="密码"
+            name="password"
+            rules={[{ required: true, message: '请输入密码!' }]}
+          >
+            <Input.Password />
+          </Form.Item>
 
-        <Form.Item<FieldType>
-          name="remember"
-          valuePropName="checked"
-          wrapperCol={{ offset: 8, span: 16 }}
-        >
-          <Checkbox>Remember me</Checkbox>
-        </Form.Item>
+          <Form.Item
+            valuePropName="checked"
+            wrapperCol={{ offset: 4, span: 20 }}
+          >
+            <div className="flex justify-between">
+              <Button type="link" className="p-0">创建账号</Button>
+              <Button type="link" className="p-0">忘记密码</Button>
+            </div>
+          </Form.Item>
 
-        <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
-          <Button type="primary" htmlType="submit">
-            Submit
-          </Button>
-        </Form.Item>
-      </Form>
+          <Form.Item wrapperCol={{ offset: 4, span: 20 }}>
+            <Button type="primary" htmlType="submit" className="w-full">
+              登录
+            </Button>
+          </Form.Item>
+        </Form>
+      </div>
     </div>
   )
 }
