@@ -1,5 +1,6 @@
-import type { FormProps } from 'antd'
 import { Button, Form, Input, message } from 'antd'
+import { useNavigate } from 'react-router-dom'
+import { useCallback } from 'react'
 import { login } from '../../api/login'
 
 interface LoginUser {
@@ -7,26 +8,33 @@ interface LoginUser {
   password: string
 }
 
-const onFinish: FormProps<LoginUser>['onFinish'] = async (values) => {
-  const res = await login(values.username, values.password)
-  if ([200, 201].includes(res.status)) {
-    message.success('登录成功')
-  }
-  else {
-    message.error(res.data.data || '登录失败')
-  }
-}
-
 export function Login() {
+  const navigate = useNavigate()
+
+  const onFinish = useCallback(async (values: LoginUser) => {
+    const res = await login(values.username, values.password)
+    const { data } = res.data
+    if ([200, 201].includes(res.status)) {
+      message.success('登录成功')
+      localStorage.setItem('access_token', data.accessToken)
+      localStorage.setItem('refresh_token', data.refreshToken)
+      localStorage.setItem('user_info', JSON.stringify(data.userInfo))
+      setTimeout(() => {
+        navigate('/')
+      }, 1000)
+    }
+    else {
+      message.error(data || '登录失败')
+    }
+  }, [])
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <h1 className="text-center font-bold text-2xl">会议室预定系统</h1>
-      <div className="mt-4 w-full max-w-[600px]">
+      <div className="mt-4 w-full max-w-[400px]">
         <Form
           name="basic"
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 20 }}
-          style={{ maxWidth: 600 }}
           initialValues={{ remember: true }}
           onFinish={onFinish}
           autoComplete="off"
@@ -52,8 +60,8 @@ export function Login() {
             wrapperCol={{ offset: 4, span: 20 }}
           >
             <div className="flex justify-between">
-              <Button type="link" className="p-0">创建账号</Button>
-              <Button type="link" className="p-0">忘记密码</Button>
+              <Button type="link" className="p-0" onClick={() => navigate('/register')}>创建账号</Button>
+              <Button type="link" className="p-0" onClick={() => navigate('/update_password')}>忘记密码</Button>
             </div>
           </Form.Item>
 

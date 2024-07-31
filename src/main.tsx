@@ -2,14 +2,22 @@ import ReactDOM from 'react-dom/client'
 import { RouterProvider, createBrowserRouter } from 'react-router-dom'
 import { Login } from './views/login/Login'
 import { Register } from './views/register/Register'
-import { UpdatePassword } from './views/updatePassword/UpdatePassword'
-import { ErrorPage } from './views/errorPage/ErrorPage'
+import { UpdateUserPassword } from './views/update_password/UpdatePassword'
+import { ErrorPage } from './views/error_page/ErrorPage'
+import { Index } from './views/index/Index'
+import { UpdateInfo } from './views/update_info/UpdateInfo'
 import './index.css'
 
 const routes = [
   {
     path: '/',
-    element: <div>11</div>,
+    element: <Index />,
+    children: [
+      {
+        path: 'update_info',
+        element: <UpdateInfo />,
+      },
+    ],
     errorElement: <ErrorPage />,
   },
   {
@@ -22,7 +30,7 @@ const routes = [
   },
   {
     path: '/update_password',
-    element: <UpdatePassword />,
+    element: <UpdateUserPassword />,
   },
 ]
 const router = createBrowserRouter(routes)

@@ -1,18 +1,16 @@
 import { Button, Form, Input, message } from 'antd'
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { register, registerCaptcha } from '../../api/login'
+import { updatePassword, updatePasswordCaptcha } from '../../api/userInfo'
 
-export interface RegisterUser {
+export interface UpdatePassword {
+  email: string
   username: string
-  nickName: string
   password: string
   confirmPassword: string
-  email: string
   captcha: string
 }
-
-export function Register() {
+export function UpdateUserPassword() {
   const [form] = Form.useForm()
   const navigate = useNavigate()
 
@@ -21,7 +19,7 @@ export function Register() {
     if (!address) {
       return message.error('请输入邮箱')
     }
-    const res = await registerCaptcha(address)
+    const res = await updatePasswordCaptcha(address)
     if ([200, 201].includes(res.status)) {
       message.success(res.data.data)
     }
@@ -30,23 +28,22 @@ export function Register() {
     }
   }, [])
 
-  const onFinish = useCallback(async (values: RegisterUser) => {
+  const onFinish = useCallback(async (values: UpdatePassword) => {
     if (values.password !== values.confirmPassword) {
       return message.error('两次密码不一致')
     }
-    const res = await register(values)
+    const res = await updatePassword(values)
     const { data } = res.data
     if ([200, 201].includes(res.status)) {
-      message.success('注册成功')
+      message.success('密码修改成功')
       setTimeout(() => {
         navigate('/login')
       }, 1500)
     }
     else {
-      message.error(data || '注册失败')
+      message.error(data || '系统繁忙，请稍后再试')
     }
   }, [])
-
   return (
     <div className="flex flex-col items-center justify-center h-full">
       <h1 className="text-center font-bold text-2xl">会议室预定系统</h1>
@@ -60,36 +57,7 @@ export function Register() {
           form={form}
           autoComplete="off"
         >
-          <Form.Item<RegisterUser>
-            label="用户名"
-            name="username"
-            rules={[{ required: true, message: '请输入用户名!' }]}
-          >
-            <Input />
-          </Form.Item>
-          <Form.Item<RegisterUser>
-            label="昵称"
-            name="nickName"
-            rules={[{ required: true, message: '请输入昵称!' }]}
-          >
-            <Input />
-          </Form.Item>
-
-          <Form.Item<RegisterUser>
-            label="密码"
-            name="password"
-            rules={[{ required: true, message: '请输入密码!' }]}
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item<RegisterUser>
-            label="确认密码"
-            name="confirmPassword"
-            rules={[{ required: true, message: '请输入确认密码!' }]}
-          >
-            <Input.Password />
-          </Form.Item>
-          <Form.Item<RegisterUser>
+          <Form.Item<UpdatePassword>
             label="邮箱"
             name="email"
             rules={[
@@ -99,9 +67,9 @@ export function Register() {
           >
             <Input />
           </Form.Item>
-          <Form.Item<RegisterUser> label="验证码">
+          <Form.Item<UpdatePassword > label="验证码">
             <div className="flex justify-between">
-              <Form.Item<RegisterUser>
+              <Form.Item<UpdatePassword >
                 name="captcha"
                 noStyle
                 rules={[{ required: true, message: '请输入验证码!' }]}
@@ -111,20 +79,39 @@ export function Register() {
               <Button className="ml-2" type="primary" onClick={getCaptcha}>获取验证码</Button>
             </div>
           </Form.Item>
-
+          <Form.Item<UpdatePassword>
+            label="用户名"
+            name="username"
+            rules={[{ required: true, message: '请输入用户名!' }]}
+          >
+            <Input />
+          </Form.Item>
+          <Form.Item<UpdatePassword >
+            label="新密码"
+            name="password"
+            rules={[{ required: true, message: '请输入密码!' }]}
+          >
+            <Input.Password />
+          </Form.Item>
+          <Form.Item<UpdatePassword >
+            label="确认密码"
+            name="confirmPassword"
+            rules={[{ required: true, message: '请输入确认密码!' }]}
+          >
+            <Input.Password />
+          </Form.Item>
           <Form.Item
             valuePropName="checked"
             wrapperCol={{ offset: 4, span: 20 }}
           >
             <div className="flex justify-between">
               <Button type="link" className="p-0"></Button>
-              <Button type="link" className="p-0" onClick={() => navigate('/login')}>已有账号？去登录</Button>
+              <Button type="link" className="p-0" onClick={() => navigate('/login')}>返回登录</Button>
             </div>
           </Form.Item>
-
           <Form.Item wrapperCol={{ offset: 4, span: 20 }}>
             <Button type="primary" htmlType="submit" className="w-full">
-              登录
+              修改
             </Button>
           </Form.Item>
         </Form>
