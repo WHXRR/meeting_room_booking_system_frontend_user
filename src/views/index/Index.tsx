@@ -10,7 +10,7 @@ export function Index() {
           <UserOutlined style={{ fontSize: '24px' }} className="cursor-pointer" />
         </Link>
       </div>
-      <div className="flex-1 overflow-hidden overflow-y-auto p-4">
+      <div className="flex-1 overflow-hidden overflow-y-auto">
         <Outlet />
       </div>
     </div>
