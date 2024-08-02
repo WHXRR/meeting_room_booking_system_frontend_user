@@ -2,13 +2,14 @@ import { Button, Form, Input, Table, message } from 'antd'
 import type { TableProps } from 'antd'
 import { useEffect, useMemo, useState } from 'react'
 import { getMeetingList } from '../../api/meeting'
+import { CreateBookingModal } from './CreateBookingModal'
 
-interface SearchMeeting {
+export interface SearchMeeting {
   name: string
   capacity: number
   location: string
 }
-interface DataType {
+export interface MeetingRoomTableType {
   id: number
   name: string
   capacity: number
@@ -27,7 +28,7 @@ export function MeetingRoomList() {
     const res = await getMeetingList(values.name, values.capacity, values.location, pageNo, pageSize)
     const { data } = res.data
     if (res.status === 200 || res.status === 201) {
-      setData(data.meetingRooms.map((item: DataType) => ({
+      setData(data.meetingRooms.map((item: MeetingRoomTableType) => ({
         key: item.name,
         ...item,
       })))
@@ -55,7 +56,10 @@ export function MeetingRoomList() {
     setPageSize(pageSize)
   }
 
-  const columns: TableProps<DataType>['columns'] = useMemo(() => [
+  const [open, setOpen] = useState(false)
+  const [currentMeetingRoom, setCurrentMeetingRoom] = useState<MeetingRoomTableType>()
+
+  const columns: TableProps<MeetingRoomTableType>['columns'] = useMemo(() => [
     {
       title: '名称',
       dataIndex: 'name',
@@ -91,9 +95,12 @@ export function MeetingRoomList() {
         <a
           className="text-blue-500"
           href="#"
+          onClick={() => {
+            setOpen(true)
+            setCurrentMeetingRoom(record)
+          }}
         >
           预定
-          {record.id}
         </a>
       ),
     },
@@ -148,6 +155,9 @@ export function MeetingRoomList() {
           }}
         />
       </div>
+      {
+        currentMeetingRoom && <CreateBookingModal open={open} meetingRoom={currentMeetingRoom} handleClose={() => setOpen(false)} />
+      }
     </div>
   )
 }

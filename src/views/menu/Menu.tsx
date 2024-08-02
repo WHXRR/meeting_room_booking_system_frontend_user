@@ -1,5 +1,5 @@
 import { Outlet, useLocation, useNavigate } from 'react-router-dom'
-import { MailOutlined } from '@ant-design/icons'
+import { HistoryOutlined, LaptopOutlined } from '@ant-design/icons'
 import type { MenuProps } from 'antd'
 import { Menu } from 'antd'
 import { useEffect } from 'react'
@@ -9,12 +9,12 @@ const items: MenuItem[] = [
   {
     key: '/meeting_room_list',
     label: '会议室列表',
-    icon: <MailOutlined />,
+    icon: <LaptopOutlined />,
   },
   {
     key: '/meeting_history',
     label: '预定历史',
-    icon: <MailOutlined />,
+    icon: <HistoryOutlined />,
   },
 ]
 
